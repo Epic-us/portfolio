@@ -49,15 +49,31 @@ services:
       retries: 3
       start_period: 30s
 
+  proxy:
+    image: metacubex/mihomo@sha256:e6acd921addecfd59a8e2d38203f88356d635b54de6c0673db0e015139989312
+    container_name: systems-analyst-proxy
+    restart: unless-stopped
+    profiles: ["tunnel"]
+    volumes:
+      - proxy_data:/root/.config/mihomo
+      - ./proxy/config.yaml:/root/.config/mihomo/config.yaml:ro
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
   cloudflared:
-    image: cloudflare/cloudflared:2026.9.1
+    image: cloudflare/cloudflared@sha256:b269e8abd07a5bf6f3f4be65d5050b2174eca89c56a0241a8ff32a16aec454e4
     container_name: systems-analyst-cloudflared
     restart: unless-stopped
     profiles: ["tunnel"]
-    command: tunnel --no-autoupdate run
+    command: tunnel --no-autoupdate --protocol http2 run
+    network_mode: "service:proxy"
     depends_on:
       portfolio:
         condition: service_healthy
+      proxy:
+        condition: service_started
     environment:
       TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
     security_opt:
@@ -68,3 +84,4 @@ services:
 volumes:
   postgres_data:
   media_data:
+  proxy_data:
