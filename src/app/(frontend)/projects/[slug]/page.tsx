@@ -5,6 +5,8 @@ import { ArrowLeft, Code2, ExternalLink } from "lucide-react";
 import { ArtifactBlock } from "@/components/artifact-block";
 import { getProject, getProjects } from "@/lib/content";
 
+export const revalidate = 60;
+
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
 }

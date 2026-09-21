@@ -44,3 +44,16 @@ export interface GitHubRepository {
   updatedAt: string;
   url: string;
 }
+
+export interface SiteProfile {
+  name: string;
+  professionalTitle: string;
+  availability: string;
+  about: string;
+  email?: string;
+  telegramUrl?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  seoTitle: string;
+  seoDescription: string;
+}

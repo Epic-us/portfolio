@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowDown, ArrowRight, Braces, Database, GitBranch, Workflow } from "lucide-react";
 import { ProjectCard } from "@/components/project-card";
-import { getProjects } from "@/lib/content";
+import { getProjects, getSiteProfile } from "@/lib/content";
+
+export const revalidate = 60;
 
 const competencies = [
   {
@@ -27,27 +29,25 @@ const competencies = [
 ];
 
 export default async function HomePage() {
-  const projects = (await getProjects()).filter((project) => project.featured).slice(0, 3);
+  const [allProjects, profile] = await Promise.all([getProjects(), getSiteProfile()]);
+  const projects = allProjects.filter((project) => project.featured).slice(0, 3);
 
   return (
     <>
       <section className="hero section-shell">
         <div className="hero-kicker">
-          <span className="status-dot" /> Открыт к проектам и предложениям
+          <span className="status-dot" /> {profile.availability}
         </div>
         <div className="hero-layout">
           <div>
-            <p className="eyebrow">Портфолио системного аналитика</p>
+            <p className="eyebrow">{profile.professionalTitle}</p>
             <h1>
               Из хаоса требований —
               <span> в работающую систему.</span>
             </h1>
           </div>
           <div className="hero-aside">
-            <p>
-              Проектирую API, структуры данных и пользовательские сценарии. Документирую решения
-              так, чтобы ими одинаково понимали бизнес, разработка и тестирование.
-            </p>
+            <p>{profile.about}</p>
             <div className="hero-actions">
               <Link className="button button-primary" href="/projects">
                 Смотреть проекты <ArrowRight size={17} />
@@ -112,12 +112,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="section-shell contact-band">
+      <section className="section-shell contact-band" id="contact">
         <div>
           <p className="eyebrow">Следующий шаг</p>
           <h2>Обсудим задачу?</h2>
         </div>
-        <a className="button button-light" href="mailto:hello@example.com">
+        <a className="button button-light" href={`mailto:${profile.email ?? "hello@example.com"}`}>
           Написать мне <ArrowRight size={17} />
         </a>
       </section>
