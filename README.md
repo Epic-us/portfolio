@@ -57,3 +57,9 @@ openssl rand -hex 32
 ```
 
 Приложение слушает только `127.0.0.1:3000`. Для публичного доступа настройте Caddy или Nginx с HTTPS. Резервное копирование должно включать оба Docker volume: `postgres_data` и `media_data`.
+
+Для Cloudflare Tunnel добавьте `CLOUDFLARE_TUNNEL_TOKEN` в `.env` и запустите профиль:
+
+```bash
+docker compose --profile tunnel up -d
+```

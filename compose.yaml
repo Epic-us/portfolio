@@ -49,6 +49,22 @@ services:
       retries: 3
       start_period: 30s
 
+  cloudflared:
+    image: cloudflare/cloudflared:2026.9.1
+    container_name: systems-analyst-cloudflared
+    restart: unless-stopped
+    profiles: ["tunnel"]
+    command: tunnel --no-autoupdate run
+    depends_on:
+      portfolio:
+        condition: service_healthy
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
 volumes:
   postgres_data:
   media_data:
