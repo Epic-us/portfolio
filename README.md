@@ -63,5 +63,3 @@ openssl rand -hex 32
 ```bash
 docker compose --profile tunnel up -d
 ```
-
-Если сервер использует outbound proxy, положите его Mihomo-конфигурацию в `proxy/config.yaml`. Этот файл исключён из Git и Docker build context.
