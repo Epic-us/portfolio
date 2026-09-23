@@ -12,6 +12,7 @@
 .env
 .env.local
 .env.*.local
+/proxy/config.yaml
 
 # testing and logs
 /coverage

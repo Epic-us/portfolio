@@ -55,15 +55,32 @@ services:
     restart: unless-stopped
     profiles: ["tunnel"]
     command: tunnel --no-autoupdate --protocol http2 run
+    network_mode: service:proxy
     depends_on:
       portfolio:
         condition: service_healthy
+      proxy:
+        condition: service_started
     environment:
       TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+
+  proxy:
+    image: metacubex/mihomo:latest
+    container_name: systems-analyst-proxy
+    restart: unless-stopped
+    profiles: ["tunnel"]
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - ./proxy/config.yaml:/root/.config/mihomo/config.yaml:ro
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
   postgres_data:
