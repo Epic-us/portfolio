@@ -1,3 +1,7 @@
-:root {
+:root[data-theme="light"] {
   --theme-elevation-1000: #0a0e0c;
+}
+
+:root[data-theme="dark"] {
+  --theme-elevation-1000: #f4f7f5;
 }
