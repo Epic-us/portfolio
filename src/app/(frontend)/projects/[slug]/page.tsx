@@ -19,7 +19,12 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   const { slug } = await params;
   const project = await getProject(slug);
   if (!project) return {};
-  return { title: project.title, description: project.excerpt };
+  return {
+    title: project.title, description: project.excerpt,
+    alternates: { canonical: `/projects/${encodeURIComponent(project.slug)}` },
+    openGraph: { title: project.title, description: project.excerpt, type: "article", locale: "ru_RU" },
+    twitter: { card: "summary", title: project.title, description: project.excerpt },
+  };
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
@@ -85,6 +90,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <p>{project.solution}</p>
         </article>
       </section>
+
+      {project.artifacts.length > 0 && (
+        <nav className="case-contents section-shell" aria-label="Материалы кейса">
+          <p className="eyebrow">Перейти к материалу</p>
+          <ol>
+            {project.artifacts.map((artifact, index) => (
+              <li key={artifact._key}>
+                <a href={`#${encodeURIComponent(artifact._key)}`}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>{artifact.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
 
       <section className="artifacts-list section-shell">
         <div className="section-heading">

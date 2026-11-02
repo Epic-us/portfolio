@@ -15,7 +15,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       style={{ "--project-accent": project.accent } as React.CSSProperties}
     >
       <div className="project-card-topline">
-        <span>0{index + 1}</span>
+        <span>{String(index + 1).padStart(2, "0")}{project.isDemo ? " / Учебный кейс" : ""}</span>
         <span>{project.year}</span>
       </div>
       <div className="project-card-body">

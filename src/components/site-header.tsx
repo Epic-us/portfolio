@@ -4,7 +4,7 @@ import { getSiteProfile } from "@/lib/content";
 
 export async function SiteHeader() {
   const profile = await getSiteProfile();
-  const contactUrl = profile.email ? `mailto:${profile.email}` : "/#contact";
+  const contactUrl = profile.email ? `mailto:${profile.email}` : profile.telegramUrl ?? profile.linkedinUrl;
 
   return (
     <header className="site-header">
@@ -15,8 +15,8 @@ export async function SiteHeader() {
       <nav className="site-nav" aria-label="Основная навигация">
         <Link href="/projects">Проекты</Link>
         <Link href="/#about">Обо мне</Link>
-        <Link className="nav-cta" href={contactUrl}>
-          Связаться <ArrowUpRight size={15} />
+        <Link className="nav-cta" href={contactUrl ?? profile.githubUrl ?? "/projects"}>
+          {contactUrl ? "Связаться" : profile.githubUrl ? "GitHub" : "Все проекты"} <ArrowUpRight size={15} />
         </Link>
       </nav>
     </header>

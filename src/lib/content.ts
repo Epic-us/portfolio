@@ -9,7 +9,6 @@ const fallbackProfile: SiteProfile = {
   availability: "Открыт к проектам и предложениям",
   about:
     "Проектирую API, структуры данных и пользовательские сценарии. Документирую решения так, чтобы их одинаково понимали бизнес, разработка и тестирование.",
-  email: "hello@example.com",
   githubUrl: "https://github.com/Epic-us/portfolio",
   seoTitle: "Портфолио системного аналитика",
   seoDescription:
@@ -120,6 +119,8 @@ export async function getSiteProfile(): Promise<SiteProfile> {
       telegramUrl: settings.telegramUrl || undefined,
       githubUrl: settings.githubUrl || fallbackProfile.githubUrl,
       linkedinUrl: settings.linkedinUrl || undefined,
+      resumeUrl: typeof settings.resume === "object" ? settings.resume?.url ?? undefined : undefined,
+      socialImageUrl: typeof settings.socialImage === "object" ? settings.socialImage?.url ?? undefined : undefined,
       seoTitle: settings.seoTitle || fallbackProfile.seoTitle,
       seoDescription: settings.seoDescription || fallbackProfile.seoDescription,
     };

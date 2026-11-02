@@ -4,6 +4,7 @@ import { ProjectCard } from "@/components/project-card";
 import { getProjects, getSiteProfile } from "@/lib/content";
 
 export const revalidate = 60;
+export const metadata = { alternates: { canonical: "/" } };
 
 const competencies = [
   {
@@ -30,7 +31,9 @@ const competencies = [
 
 export default async function HomePage() {
   const [allProjects, profile] = await Promise.all([getProjects(), getSiteProfile()]);
-  const projects = allProjects.filter((project) => project.featured).slice(0, 3);
+  const featuredProjects = allProjects.filter((project) => project.featured);
+  const projects = (featuredProjects.length ? featuredProjects : allProjects).slice(0, 3);
+  const contactUrl = profile.email ? `mailto:${profile.email}` : profile.telegramUrl ?? profile.linkedinUrl;
 
   return (
     <>
@@ -55,21 +58,16 @@ export default async function HomePage() {
               <a className="button button-secondary" href="#about">
                 Обо мне <ArrowDown size={17} />
               </a>
+              {profile.resumeUrl && <a className="text-link" href={profile.resumeUrl} target="_blank" rel="noreferrer">Резюме <ArrowRight size={17} /></a>}
             </div>
           </div>
         </div>
-        <div className="hero-terminal" aria-label="Основные направления работы">
-          <div className="terminal-bar">
-            <span /> <span /> <span />
-            <p>analyst.profile</p>
-          </div>
-          <div className="terminal-content">
-            <p><span>role</span>: system_analyst</p>
-            <p><span>focus</span>: [requirements, api, data, qa]</p>
-            <p><span>principle</span>: &quot;clarity over complexity&quot;</p>
-            <p className="terminal-cursor"><span>status</span>: building_portfolio_</p>
-          </div>
-        </div>
+        <ol className="analysis-flow" aria-label="Этапы проектирования решения">
+          <li><span>01</span><strong>Бизнес-задача</strong><p>Цель, участники, ограничения</p></li>
+          <li><span>02</span><strong>Требования</strong><p>Сценарии и критерии приёмки</p></li>
+          <li><span>03</span><strong>Модель решения</strong><p>Процессы, данные, API</p></li>
+          <li><span>04</span><strong>Проверка</strong><p>Тест-кейсы и трассировка</p></li>
+        </ol>
       </section>
 
       <section className="section-shell section-block" id="projects">
@@ -115,10 +113,10 @@ export default async function HomePage() {
       <section className="section-shell contact-band" id="contact">
         <div>
           <p className="eyebrow">Следующий шаг</p>
-          <h2>Обсудим задачу?</h2>
+          <h2>{contactUrl ? "Обсудим задачу?" : "Посмотреть работы"}</h2>
         </div>
-        <a className="button button-light" href={`mailto:${profile.email ?? "hello@example.com"}`}>
-          Написать мне <ArrowRight size={17} />
+        <a className="button button-light" href={contactUrl ?? "/projects"}>
+          {contactUrl ? "Написать мне" : "Открыть проекты"} <ArrowRight size={17} />
         </a>
       </section>
     </>

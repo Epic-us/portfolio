@@ -6,6 +6,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Проекты",
+  alternates: { canonical: "/projects" },
   description: "Кейсы по системному анализу, API, данным и тестированию.",
 };
 

@@ -54,6 +54,8 @@ export interface SiteProfile {
   telegramUrl?: string;
   githubUrl?: string;
   linkedinUrl?: string;
+  resumeUrl?: string;
+  socialImageUrl?: string;
   seoTitle: string;
   seoDescription: string;
 }

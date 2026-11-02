@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Maximize2 } from "lucide-react";
 
 interface MermaidDiagramProps {
@@ -13,6 +13,10 @@ export function MermaidDiagram({ code, title }: MermaidDiagramProps) {
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [diagramWidth, setDiagramWidth] = useState(900);
+  const diagramId = `diagram-${reactId.replace(/[^a-zA-Z0-9]/g, "")}`;
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,9 +38,14 @@ export function MermaidDiagram({ code, title }: MermaidDiagramProps) {
             tertiaryColor: "#0d1210",
           },
         });
-        const id = `diagram-${reactId.replace(/[^a-zA-Z0-9]/g, "")}`;
-        const result = await mermaid.render(id, code);
-        if (!cancelled) setSvg(result.svg);
+        const result = await mermaid.render(diagramId, code);
+        const document = new DOMParser().parseFromString(result.svg, "image/svg+xml");
+        const width = Number(document.documentElement.getAttribute("viewBox")?.trim().split(/\s+/)[2]);
+        if (!cancelled) {
+          setSvg(result.svg);
+          setError(false);
+          setDiagramWidth(Number.isFinite(width) && width > 0 ? Math.min(width, 10000) : 900);
+        }
       } catch {
         if (!cancelled) setError(true);
       }
@@ -46,7 +55,7 @@ export function MermaidDiagram({ code, title }: MermaidDiagramProps) {
     return () => {
       cancelled = true;
     };
-  }, [code, reactId]);
+  }, [code, diagramId]);
 
   return (
     <>
@@ -54,7 +63,9 @@ export function MermaidDiagram({ code, title }: MermaidDiagramProps) {
         <button
           className="diagram-expand"
           type="button"
-          onClick={() => setExpanded(true)}
+          ref={triggerRef}
+          onClick={() => { setExpanded(true); dialogRef.current?.showModal(); }}
+          disabled={!svg || error}
           aria-label={`Развернуть диаграмму «${title}»`}
         >
           <Maximize2 size={16} />
@@ -65,17 +76,17 @@ export function MermaidDiagram({ code, title }: MermaidDiagramProps) {
         ) : svg ? (
           <div className="mermaid-output" dangerouslySetInnerHTML={{ __html: svg }} />
         ) : (
-          <div className="diagram-loading">Загрузка диаграммы…</div>
+          <div className="diagram-loading" role="status">Загрузка диаграммы…</div>
         )}
       </div>
-      {expanded && (
-        <div className="diagram-modal" role="dialog" aria-modal="true" aria-label={title}>
-          <button type="button" onClick={() => setExpanded(false)}>
+      <dialog ref={dialogRef} className="diagram-modal" aria-label={title} onClose={() => { setExpanded(false); triggerRef.current?.focus(); }}>
+          <button type="button" onClick={() => dialogRef.current?.close()}>
             Закрыть
           </button>
-          <div className="mermaid-output" dangerouslySetInnerHTML={{ __html: svg }} />
-        </div>
-      )}
+          <div className="mermaid-output" tabIndex={0} aria-label="Диаграмма с прокруткой">
+            {expanded && <div style={{ width: diagramWidth, minWidth: "100%" }} dangerouslySetInnerHTML={{ __html: svg.replaceAll(diagramId, `${diagramId}-expanded`) }} />}
+          </div>
+      </dialog>
     </>
   );
 }

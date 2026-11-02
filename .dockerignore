@@ -6,3 +6,8 @@ npm-debug.log
 .env.local
 .env.*.local
 README.md
+proxy
+.design
+*.tar.gz
+compose.before-*.yaml
+compose.region-test.yaml
